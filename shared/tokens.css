@@ -1,0 +1,49 @@
+/* VKRI design tokens. Light theme only in v1 (tokens are ready for a dark set later).
+   Layout idea: quiet paper ground, ink text, hairlines instead of boxes; brass only for accents;
+   each wedding carries its own signature colour (camelia / limone / lumiere). */
+@font-face { font-family: 'Cormorant Garamond'; font-style: normal; font-weight: 400 700; font-display: swap; src: url('fonts/cormorant-garamond.woff2') format('woff2'); }
+@font-face { font-family: 'Cormorant Garamond'; font-style: italic; font-weight: 400 700; font-display: swap; src: url('fonts/cormorant-garamond-italic.woff2') format('woff2'); }
+@font-face { font-family: 'Inter'; font-style: normal; font-weight: 400 700; font-display: swap; src: url('fonts/inter.woff2') format('woff2'); }
+
+:root {
+  color-scheme: light;
+  /* ground and ink */
+  --paper: #F7F7F3;
+  --surface: #FFFFFF;
+  --sunken: #F0F0EA;
+  --ink: #1A222D;
+  --ink-2: #47515E;
+  --ink-3: #68727F;
+  --line: #E3E2DB;
+  --line-2: #CFCEC5;
+  /* accent */
+  --brass: #86682B;
+  --brass-soft: #F2ECDC;
+  --night: #1A222D;
+  --on-night: #F3F1EA;
+  --on-night-2: #A9B0BA;
+  /* state (never used as an accent) */
+  --good: #2C7355; --good-soft: #E3F1EA;
+  --warn: #8F5E0F; --warn-soft: #FAEFD6;
+  --crit: #A93A32; --crit-soft: #F9E4E1;
+  --info: #35618F; --info-soft: #E3ECF6;
+  --idle: #68727F; --idle-soft: #ECECE6;
+  /* wedding signature colours */
+  --camelia: #9F4458; --camelia-soft: #F6E6E9;
+  --limone: #6F7A1F; --limone-soft: #EFF1DA;
+  --lumiere: #3A558F; --lumiere-soft: #E4E9F5;
+  --wed: var(--brass); --wed-soft: var(--brass-soft);
+  /* type */
+  --display: 'Cormorant Garamond', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+  --body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --t-xs: 0.75rem; --t-sm: 0.8125rem; --t-md: 0.9375rem; --t-lg: 1.0625rem;
+  --d-sm: 1.375rem; --d-md: 1.75rem; --d-lg: 2.375rem; --d-xl: 3.25rem;
+  /* space and shape */
+  --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 24px; --s6: 32px; --s7: 48px;
+  --r1: 6px; --r2: 10px; --r3: 16px;
+  --shadow: 0 1px 2px rgba(26, 34, 45, .06), 0 8px 24px rgba(26, 34, 45, .08);
+  --safe-b: env(safe-area-inset-bottom, 0px); --safe-t: env(safe-area-inset-top, 0px);
+}
+[data-wedding="como"] { --wed: var(--camelia); --wed-soft: var(--camelia-soft); }
+[data-wedding="sorrento"] { --wed: var(--limone); --wed-soft: var(--limone-soft); }
+[data-wedding="paris"] { --wed: var(--lumiere); --wed-soft: var(--lumiere-soft); }

@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F7F7F3">
+<link rel="icon" href="data:,">
+<title>VKRI Prototype</title>
+<link rel="stylesheet" href="shared/tokens.css">
+<link rel="stylesheet" href="shared/ui.css">
+<link rel="stylesheet" href="shared/tour.css">
+<style>
+  .wrap { max-width: 1080px; margin: 0 auto; padding: calc(var(--s6) + var(--safe-t)) var(--s4) var(--s7); display: flex; flex-direction: column; gap: var(--s6); }
+  .brand { font-family: var(--display); font-size: 2.75rem; font-weight: 600; letter-spacing: .18em; line-height: 1; }
+  .cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s5); align-items: start; }
+  .who { display: flex; align-items: center; gap: var(--s3); width: 100%; padding: var(--s3) var(--s5); min-height: 60px; }
+  .who:hover { background: var(--sunken); }
+  .who .icon { margin-left: auto; color: var(--ink-3); }
+  .steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s4); }
+  .steps li { padding: var(--s4); border-top: 2px solid var(--brass); background: var(--surface); font-size: var(--t-sm); color: var(--ink-2); }
+  .steps .n { font-family: var(--display); font-size: 1.5rem; color: var(--brass); font-variant-numeric: lining-nums; }
+  /* The one loud thing on the page: a dark block with two gold buttons. */
+  .tourbox { display: flex; align-items: center; justify-content: space-between; gap: var(--s4) var(--s6); flex-wrap: wrap; padding: var(--s5) var(--s6); background: var(--night); color: var(--on-night); border-radius: var(--r3); }
+  .tourbox > .col { flex: 1 1 320px; }
+  .tour-btns { display: flex; gap: var(--s3); flex: 0 0 auto; }
+  .tourbox .eyebrow { color: #E2C27A; }
+  .tourbox p { color: var(--on-night-2); }
+  .tourbox .btn { min-height: 52px; padding: 0 var(--s5); font-size: var(--t-md); border: 0; background: #E2C27A; color: var(--ink); box-shadow: 0 6px 18px rgba(226, 194, 122, .28); transition: transform .15s, background .15s, box-shadow .15s; }
+  .tourbox .btn:hover { background: #EDD294; transform: translateY(-1px); box-shadow: 0 10px 24px rgba(226, 194, 122, .36); }
+  .tourbox .btn.alt { background: transparent; color: var(--on-night); box-shadow: inset 0 0 0 1.5px #E2C27A; }
+  .tourbox .btn.alt:hover { background: rgba(226, 194, 122, .14); }
+  .tourbox .btn .icon { width: 18px; height: 18px; }
+  @media (max-width: 767px) { .cols, .steps { grid-template-columns: 1fr; } .brand { font-size: 2.125rem; } .tourbox { padding: var(--s5); } .tour-btns { flex: 1 1 100%; flex-direction: column; } .tourbox .btn { width: 100%; } }
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<script src="backend/seed/core.js"></script>
+<script src="backend/seed/como.js"></script>
+<script src="backend/seed/sorrento.js"></script>
+<script src="backend/seed/paris.js"></script>
+<script src="backend/db.js"></script>
+<script src="backend/api.js"></script>
+<script src="shared/format.js"></script>
+<script src="shared/ui.js"></script>
+<script src="shared/tour.js"></script>
+<script>
+(function () {
+  'use strict';
+  var ui = VKRI.ui, esc = ui.esc, fmt = VKRI.fmt;
+  function render() {
+    var api = VKRI.api.for('u_riccardo');
+    var weddings = {};
+    api.list('weddings').forEach(function (w) { weddings[w.id] = w; });
+    var users = api.list('users');
+    var planners = users.filter(function (u) { return u.type === 'planner'; });
+    var couples = users.filter(function (u) { return u.type === 'couple' && weddings[u.wedding_id]; });
+    var shared = VKRI.api.mode() === 'server';
+    document.getElementById('app').innerHTML =
+      '<header class="col gap-2"><div class="brand">VKRI</div><p class="soft">Prototype: one system, two interfaces. Choose who you are.</p></header>' +
+      '<div class="cols">' +
+      '<section class="panel"><div class="panel-head"><h2 class="display d-sm">Planning team</h2><span class="xs muted">Planner CRM</span></div><div class="list">' +
+      planners.map(function (u) {
+        return '<button class="who" data-login="' + u.id + '" data-to="planner/index.html">' + ui.avatar(u, 'lg') + '<span class="col gap-1"><span class="strong">' + esc(u.name) + '</span><span class="xs muted">' + esc(u.title) + '</span></span>' + ui.icon('chevron') + '</button>';
+      }).join('') + '</div></section>' +
+      '<section class="panel"><div class="panel-head"><h2 class="display d-sm">Couples</h2><span class="xs muted">Couple portal</span></div><div class="list">' +
+      couples.map(function (u) {
+        var w = weddings[u.wedding_id];
+        return '<button class="who" data-wedding="' + w.id + '" data-login="' + u.id + '" data-to="couple/index.html">' + ui.avatar(u, 'lg') + '<span class="col gap-1"><span class="strong">' + esc(u.name) + '</span><span class="xs muted">' + esc(w.title) + ' · ' + fmt.range(w.start_date, w.end_date) + '</span></span>' + ui.icon('chevron') + '</button>';
+      }).join('') + '</div></section></div>' +
+      '<section class="tourbox"><div class="col gap-2"><span class="eyebrow">Two minutes</span><h2 class="display d-md">New here? Take the tour</h2><p>Eight short steps through the main screens. Then it steps aside and you explore on your own.</p></div>' +
+      '<div class="tour-btns"><button class="btn" data-tour-start="planner">Tour the planner CRM' + ui.icon('arrow') + '</button><button class="btn alt" data-tour-start="couple">Tour the couple portal' + ui.icon('arrow') + '</button></div></section>' +
+      '<section class="col gap-3"><h2 class="display d-sm">Try this</h2><ol class="steps">' +
+      '<li><div class="n">1</div>Open this page on the iPhone and sign in as <span class="strong">Olivia &amp; Henry</span>. On the MacBook, sign in as <span class="strong">Sonia</span> and open Lake Como, Phases, 3.1.</li>' +
+      '<li><div class="n">2</div>On the phone, open a decision under <span class="strong">Needs you</span> and choose an option. On the laptop, "Waiting on the couple" updates by itself.</li>' +
+      '<li><div class="n">3</div>As Sonia, add an internal note and a visible comment on that page. Then use <span class="strong">View as couple</span>: under "Notes from your planners" only the visible one is there.</li></ol></section>' +
+      '<footer class="row between wrap small muted"><span>' + (shared ? 'Shared mode: every device on this Wi-Fi sees the same data.' : 'Local mode: data lives in this browser. Run <code>python3 serve.py</code> to share it with a phone.') + '</span>' +
+      '<span class="row gap-3"><a class="link" href="test-tasks.html">Test sheet for testers</a><button class="btn sm" id="reset">Reset demo data</button></span></footer>' + ui.demoFlag();
+  }
+  document.addEventListener('click', function (e) {
+    var t = e.target.closest('[data-tour-start]');
+    if (t) {
+      var role = t.getAttribute('data-tour-start');
+      VKRI.tour.begin(role);
+      VKRI.api.login(role === 'planner' ? 'u_sonia' : 'c_como');
+      location.href = role === 'planner' ? 'planner/index.html#/portfolio' : 'couple/index.html#/home';
+      return;
+    }
+    var b = e.target.closest('[data-login]');
+    if (b) { VKRI.tour.begin(null); VKRI.api.login(b.getAttribute('data-login')); location.href = b.getAttribute('data-to'); return; }
+    if (e.target.closest('#reset')) { VKRI.api.reset(); ui.toast('Demo data is back to the start'); }
+  });
+  VKRI.api.onChange(render);
+  render();
+})();
+</script>
+</body>
+</html>
