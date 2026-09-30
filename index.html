@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<script src="shared/gate.js" data-login="login.html"></script>
 <meta name="robots" content="noindex, nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#F7F7F3">
@@ -76,7 +77,8 @@
       '<li><div class="n">2</div>On the phone, open a decision under <span class="strong">Needs you</span> and choose an option. On the laptop, "Waiting on the couple" updates by itself.</li>' +
       '<li><div class="n">3</div>As Sonia, add an internal note and a visible comment on that page. Then use <span class="strong">View as couple</span>: under "Notes from your planners" only the visible one is there.</li></ol></section>' +
       '<footer class="row between wrap small muted"><span>' + (shared ? 'Shared mode: every device on this Wi-Fi sees the same data.' : 'Local mode: data lives in this browser. Run <code>python3 serve.py</code> to share it with a phone.') + '</span>' +
-      '<span class="row gap-3"><a class="link" href="test-tasks.html">Test sheet for testers</a><button class="btn sm" id="reset">Reset demo data</button></span></footer>' + ui.demoFlag();
+      '<span class="row gap-3 wrap"><a class="link" href="test-tasks.html">Test sheet for testers</a><button class="btn sm" id="reset">Reset demo data</button>' +
+        '<span class="small muted">Signed in as ' + esc(VKRIGate.account().toUpperCase()) + '</span><button class="btn sm ghost" id="signout">Sign out</button></span></footer>' + ui.demoFlag();
   }
   document.addEventListener('click', function (e) {
     var t = e.target.closest('[data-tour-start]');
@@ -89,6 +91,7 @@
     }
     var b = e.target.closest('[data-login]');
     if (b) { VKRI.tour.begin(null); VKRI.api.login(b.getAttribute('data-login')); location.href = b.getAttribute('data-to'); return; }
+    if (e.target.closest('#signout')) { VKRIGate.signOut(); location.replace('login.html'); return; }
     if (e.target.closest('#reset')) { VKRI.api.reset(); ui.toast('Demo data is back to the start'); }
   });
   VKRI.api.onChange(render);

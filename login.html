@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F7F7F3">
+<link rel="icon" href="data:,">
+<title>VKRI Sign In</title>
+<link rel="stylesheet" href="shared/tokens.css">
+<link rel="stylesheet" href="shared/ui.css">
+<script src="shared/gate.js"></script>
+<style>
+  html, body { height: 100%; }
+  .signin { min-height: 100dvh; display: flex; align-items: center; justify-content: center; padding: calc(var(--s6) + var(--safe-t)) var(--s4) calc(var(--s6) + var(--safe-b)); }
+  .signin form { width: min(360px, 100%); display: flex; flex-direction: column; gap: var(--s4); }
+  .signin .brand { font-family: var(--display); font-size: 2.75rem; font-weight: 600; letter-spacing: .18em; line-height: 1; text-align: center; }
+  .signin .lede { text-align: center; color: var(--ink-3); font-size: var(--t-sm); margin-top: calc(-1 * var(--s2)); margin-bottom: var(--s2); }
+  .signin .btn { min-height: 48px; font-size: var(--t-md); }
+  .signin .error { color: var(--crit); font-size: var(--t-sm); min-height: 1.4em; text-align: center; }
+  .signin .input { background: var(--surface); }
+</style>
+</head>
+<body>
+<main class="signin">
+  <form id="signin" novalidate>
+    <div class="brand">VKRI</div>
+    <p class="lede">Prototype. Please sign in.</p>
+    <label class="field"><span>Login</span>
+      <input class="input" id="login" name="login" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" required autofocus>
+    </label>
+    <label class="field"><span>Password</span>
+      <input class="input" id="password" name="password" type="password" autocomplete="current-password" required>
+    </label>
+    <p class="error" id="error" role="alert"></p>
+    <button class="btn primary block" type="submit" id="go">Sign in</button>
+  </form>
+</main>
+<script>
+(function () {
+  'use strict';
+  var params = new URLSearchParams(location.search), next = params.get('next') || '';
+  // Only ever return to a page of this site.
+  if (!/^\/(?!\/)/.test(next)) next = 'index.html';
+  if (VKRIGate.account()) { location.replace(next); return; }
+  var form = document.getElementById('signin'), err = document.getElementById('error'), go = document.getElementById('go');
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var login = form.elements.login.value, password = form.elements.password.value;
+    if (!login.trim() || !password) { err.textContent = 'Enter your login and password.'; return; }
+    go.disabled = true; go.textContent = 'Checking';
+    setTimeout(function () { // lets the button repaint before the hashing runs
+      var id = VKRIGate.check(login, password);
+      if (id) { VKRIGate.signIn(id); location.replace(next); return; }
+      go.disabled = false; go.textContent = 'Sign in';
+      err.textContent = 'That login and password do not match.';
+      form.elements.password.value = ''; form.elements.password.focus();
+    }, 20);
+  });
+  form.addEventListener('input', function () { err.textContent = ''; });
+})();
+</script>
+</body>
+</html>
