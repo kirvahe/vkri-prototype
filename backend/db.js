@@ -81,6 +81,9 @@
   }
   function tryServer() {
     if (!hasWindow || !/^https?:$/.test(location.protocol)) return;
+    /* serve.py is only ever reached on this machine or the local network; on a public static host there is nothing to ask. */
+    var host = location.hostname;
+    if (host.indexOf('.') > -1 && !/^(127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.)/.test(host) && !/\.(local|lan|home)$/.test(host)) return;
     fetch('/api/ops?since=0', { cache: 'no-store' }).then(function (res) {
       if (!res.ok || (res.headers.get('content-type') || '').indexOf('json') < 0) throw new Error('static host');
       return res.json();
