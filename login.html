@@ -19,6 +19,13 @@
   .signin .btn { min-height: 48px; font-size: var(--t-md); }
   .signin .error { color: var(--crit); font-size: var(--t-sm); min-height: 1.4em; text-align: center; }
   .signin .input { background: var(--surface); }
+  .pw { position: relative; }
+  .pw .input { padding-right: 52px; }
+  .pw .eye { position: absolute; top: 0; right: 0; width: 48px; height: 100%; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; color: var(--ink-3); border-radius: 0 var(--r1) var(--r1) 0; }
+  .pw .eye:hover { color: var(--ink); }
+  .pw .eye .icon { width: 20px; height: 20px; }
+  .pw .eye .shut, .pw .eye[aria-pressed="true"] .open { display: none; }
+  .pw .eye[aria-pressed="true"] .shut { display: inline-flex; }
 </style>
 </head>
 <body>
@@ -29,9 +36,12 @@
     <label class="field"><span>Login</span>
       <input class="input" id="login" name="login" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" required autofocus>
     </label>
-    <label class="field"><span>Password</span>
-      <input class="input" id="password" name="password" type="password" autocomplete="current-password" required>
-    </label>
+    <div class="field"><label for="password"><span class="strong">Password</span></label>
+      <div class="pw">
+        <input class="input" id="password" name="password" type="password" autocomplete="current-password" autocapitalize="none" autocorrect="off" spellcheck="false" required>
+        <button class="eye" type="button" id="eye" aria-label="Show password" aria-pressed="false" aria-controls="password"><span class="open"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.8"/></svg></span><span class="shut"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5c2 0 3.700.7 5.100 1.700M21.500 12S18 18.500 12 18.500c-2 0-3.700-.7-5.100-1.700"/><path d="M4 20 20 4"/></svg></span></button>
+      </div>
+    </div>
     <p class="error" id="error" role="alert"></p>
     <button class="btn primary block" type="submit" id="go">Sign in</button>
   </form>
@@ -58,6 +68,15 @@
     }, 20);
   });
   form.addEventListener('input', function () { err.textContent = ''; });
+  // One tap on the eye shows the password; the next tap hides it again.
+  var eye = document.getElementById('eye'), pw = form.elements.password;
+  eye.addEventListener('click', function () {
+    var show = pw.type === 'password';
+    pw.type = show ? 'text' : 'password';
+    eye.setAttribute('aria-pressed', show ? 'true' : 'false');
+    eye.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+    var end = pw.value.length; pw.focus(); try { pw.setSelectionRange(end, end); } catch (e) { /* older browsers */ }
+  });
 })();
 </script>
 </body>

@@ -6,7 +6,7 @@
 (function () {
   'use strict';
   var KEY = 'vkri.gate', SALT = 'vkri-prototype-2027:', ROUNDS = 3000;
-  var ACCOUNTS = { /* login (lower case) -> hash */ ri: 'd507854e41305b5a36d9064cf17a905bd4693b7ba89b1c8e2682f0a9deec8639', sb: 'ec8cda77103e8ceea143567c900ff8c649e19b6ffb38c24e41c0e10954f8d235', vk: 'aab7fc182b8c1885a619985967a8c9514c377987590a208890595c01aead1c8c' };
+  var ACCOUNTS = { /* login (lower case) -> hash */ ri: 'dce4cceca917ac4447c9187a0ed6cc1fc2c2c44b926845ef231a736075d7cc68', sb: '59623dbf3118d19b9a197d12b7b5b9f83a82dbf20a50729079910b2e80fa0648', vk: 'deaff82d920abd5dc5a02fb5e3a3e450d2cdba6be83ab8efe1975dfbebe8c9bb' };
 
   /* SHA-256 of a string (UTF-8), hex. Plain JavaScript so it also works on http:// addresses in the local network. */
   function sha256(text) {
